@@ -35,7 +35,7 @@ class PostController extends Controller
             abort(404);
         }
 
-        $relatedPosts = $this->postService->getRelated($post['category'], $post['id'], 3);
+        $relatedPosts = $this->postService->getRelated($post['category'], $post['slug'], 3);
 
         return view('post', [
             'post' => $post,

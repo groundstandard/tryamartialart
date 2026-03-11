@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php --version)",
+      "Bash(npm --version)",
+      "Bash(cat c:/xampp/htdocs/tryamartialart/tryamartialart/database/migrations/*.php)",
+      "Read(//c/xampp/**)",
+      "Bash(c:/xampp/php/php.exe --version)",
+      "Bash(c:/xampp/php/php.exe build-static.php)"
+    ]
+  }
+}
