@@ -6,7 +6,10 @@
       "Bash(cat c:/xampp/htdocs/tryamartialart/tryamartialart/database/migrations/*.php)",
       "Read(//c/xampp/**)",
       "Bash(c:/xampp/php/php.exe --version)",
-      "Bash(c:/xampp/php/php.exe build-static.php)"
+      "Bash(c:/xampp/php/php.exe build-static.php)",
+      "Bash(php -S 127.0.0.1:8000 serve.php)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8000)",
+      "WebFetch(domain:www.thekick.io)"
     ]
   }
 }

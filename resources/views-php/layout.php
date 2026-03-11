@@ -10,23 +10,76 @@ function renderLayout($content, $metaTitle = 'Try Martial Art', $metaDescription
     
     <title><?= htmlspecialchars($metaTitle) ?></title>
     <meta name="description" content="<?= htmlspecialchars($metaDescription) ?>">
-    
+    <?php if ($post): ?><meta name="author" content="<?= htmlspecialchars($post['author'] ?? 'Try Martial Art') ?>"><?php endif; ?>
+    <link rel="canonical" href="<?= 'https://tryamartialart.com' . $_SERVER['REQUEST_URI'] ?>">
+
     <!-- Open Graph -->
     <meta property="og:title" content="<?= htmlspecialchars($metaTitle) ?>">
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription) ?>">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="<?= 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ?>">
+    <meta property="og:type" content="<?= $post ? 'article' : 'website' ?>">
+    <meta property="og:url" content="<?= 'https://tryamartialart.com' . $_SERVER['REQUEST_URI'] ?>">
     <meta property="og:site_name" content="Try Martial Art">
     <?php if ($post && isset($post['image'])): ?>
-    <meta property="og:image" content="<?= 'http://' . $_SERVER['HTTP_HOST'] . $post['image'] ?>">
+    <meta property="og:image" content="<?= strpos($post['image'], 'http') === 0 ? htmlspecialchars($post['image']) : 'https://tryamartialart.com' . htmlspecialchars($post['image']) ?>">
     <?php else: ?>
-    <meta property="og:image" content="<?= 'http://' . $_SERVER['HTTP_HOST'] ?>/images/hero.jpg">
+    <meta property="og:image" content="https://tryamartialart.com/images/hero.jpg">
     <?php endif; ?>
-    
+    <?php if ($post): ?>
+    <meta property="article:published_time" content="<?= htmlspecialchars($post['date'] ?? '') ?>">
+    <meta property="article:author" content="<?= htmlspecialchars($post['author'] ?? 'Try Martial Art') ?>">
+    <meta property="article:section" content="<?= htmlspecialchars($post['category'] ?? '') ?>">
+    <?php endif; ?>
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@tryamartialart">
     <meta name="twitter:title" content="<?= htmlspecialchars($metaTitle) ?>">
     <meta name="twitter:description" content="<?= htmlspecialchars($metaDescription) ?>">
+    <?php if ($post && isset($post['image'])): ?>
+    <meta name="twitter:image" content="<?= strpos($post['image'], 'http') === 0 ? htmlspecialchars($post['image']) : 'https://tryamartialart.com' . htmlspecialchars($post['image']) ?>">
+    <?php endif; ?>
+
+    <?php if ($post): ?>
+    <!-- JSON-LD Article Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": <?= json_encode($post['title'] ?? '') ?>,
+        "description": <?= json_encode($post['excerpt'] ?? $metaDescription) ?>,
+        "datePublished": <?= json_encode($post['date'] ?? '') ?>,
+        "dateModified": <?= json_encode($post['date'] ?? '') ?>,
+        "author": {
+            "@type": "Person",
+            "name": <?= json_encode($post['author'] ?? 'Try Martial Art') ?>
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Try Martial Art",
+            "url": "https://tryamartialart.com"
+        },
+        "image": <?= json_encode(strpos($post['image'] ?? '', 'http') === 0 ? $post['image'] : 'https://tryamartialart.com' . ($post['image'] ?? '')) ?>,
+        "url": <?= json_encode('https://tryamartialart.com/p/' . ($post['slug'] ?? '')) ?>,
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": <?= json_encode('https://tryamartialart.com/p/' . ($post['slug'] ?? '')) ?>
+        },
+        "articleSection": <?= json_encode($post['category'] ?? '') ?>
+    }
+    </script>
+    <!-- JSON-LD BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://tryamartialart.com"},
+            {"@type": "ListItem", "position": 2, "name": <?= json_encode($post['category'] ?? 'Articles') ?>, "item": <?= json_encode('https://tryamartialart.com/category/' . strtolower($post['category'] ?? '')) ?>},
+            {"@type": "ListItem", "position": 3, "name": <?= json_encode($post['title'] ?? '') ?>, "item": <?= json_encode('https://tryamartialart.com/p/' . ($post['slug'] ?? '')) ?>}
+        ]
+    }
+    </script>
+    <?php endif; ?>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">

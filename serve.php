@@ -18,11 +18,36 @@ if ($uri !== '/' && file_exists(__DIR__ . '/public' . $uri)) {
 
 // Load the mock data
 function loadPosts() {
+    $posts = [];
+
+    // Load base posts from data/posts.json
     $jsonPath = __DIR__ . '/data/posts.json';
     if (file_exists($jsonPath)) {
-        return json_decode(file_get_contents($jsonPath), true) ?? [];
+        $posts = json_decode(file_get_contents($jsonPath), true) ?? [];
     }
-    return [];
+
+    // Load individual posts from content/posts/*.json (published via n8n)
+    $contentDir = __DIR__ . '/content/posts/';
+    if (is_dir($contentDir)) {
+        $existingSlugs = array_column($posts, 'slug');
+        $maxId = !empty($posts) ? max(array_column($posts, 'id')) : 0;
+
+        foreach (glob($contentDir . '*.json') as $file) {
+            $post = json_decode(file_get_contents($file), true);
+            if ($post && isset($post['slug']) && !in_array($post['slug'], $existingSlugs)) {
+                $maxId++;
+                $post['id'] = $maxId;
+                if (!isset($post['author'])) $post['author'] = 'Admin';
+                $posts[] = $post;
+                $existingSlugs[] = $post['slug'];
+            }
+        }
+    }
+
+    // Sort by date descending
+    usort($posts, fn($a, $b) => strcmp($b['date'] ?? '', $a['date'] ?? ''));
+
+    return $posts;
 }
 
 function getPostBySlug($slug) {
